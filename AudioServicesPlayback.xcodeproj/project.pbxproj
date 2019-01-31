@@ -6,6 +6,20 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		3590ED95220289C500021D14 /* UniversalFramework */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 3590ED96220289C500021D14 /* Build configuration list for PBXAggregateTarget "UniversalFramework" */;
+			buildPhases = (
+				3590ED99220289C800021D14 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = UniversalFramework;
+			productName = UniversalFramework;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		350DC56722025F4C000FE44C /* AudioServicesPlayback.h in Headers */ = {isa = PBXBuildFile; fileRef = 350DC56522025F4C000FE44C /* AudioServicesPlayback.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		350DC56F22025F6D000FE44C /* Playback.h in Headers */ = {isa = PBXBuildFile; fileRef = 350DC56D22025F6D000FE44C /* Playback.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -159,7 +173,6 @@
 				350DC55E22025F4C000FE44C /* Sources */,
 				350DC55F22025F4C000FE44C /* Frameworks */,
 				350DC56022025F4C000FE44C /* Resources */,
-				350DC57122025F99000FE44C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -195,6 +208,7 @@
 		350DC55922025F4C000FE44C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				DefaultBuildSystemTypeForWorkspace = Original;
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Pawel Klapuch";
 				TargetAttributes = {
@@ -202,6 +216,9 @@
 						CreatedOnToolsVersion = 10.1;
 					};
 					350DC575220265BA000FE44C = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					3590ED95220289C500021D14 = {
 						CreatedOnToolsVersion = 10.1;
 					};
 				};
@@ -221,6 +238,7 @@
 			targets = (
 				350DC56122025F4C000FE44C /* AudioServicesPlayback */,
 				350DC575220265BA000FE44C /* AudioServicesPlaybackDemo */,
+				3590ED95220289C500021D14 /* UniversalFramework */,
 			);
 		};
 /* End PBXProject section */
@@ -246,7 +264,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		350DC57122025F99000FE44C /* ShellScript */ = {
+		3590ED99220289C800021D14 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -261,7 +279,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Next, work out if we're in SIM or DEVICE\nif [ \"false\" == ${ALREADYINVOKED:-false} ]\nthen\n\nexport ALREADYINVOKED=\"true\"\n\nif [ ${PLATFORM_NAME} = \"iphonesimulator\" ]\nthen\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO BITCODE_GENERATION_MODE=bitcode CODE_SIGNING_REQUIRED=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nelse\nxcodebuild -target \"${PROJECT_NAME}\" -configuration ${CONFIGURATION} -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO BITCODE_GENERATION_MODE=bitcode CODE_SIGNING_REQUIRED=NO BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nfi\n\n# Step 2. Copy the framework structure (from iphoneos build) to the universal folder\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Step 3. Copy Swift modules from iphonesimulator build (if it exists) to the copied framework directory\nSIMULATOR_SWIFT_MODULES_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/Modules/${PROJECT_NAME}.swiftmodule/.\"\nif [ -d \"${SIMULATOR_SWIFT_MODULES_DIR}\" ]; then\ncp -R \"${SIMULATOR_SWIFT_MODULES_DIR}\" \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/Modules/${PROJECT_NAME}.swiftmodule\"\nfi\n\n# Step 4. Create universal binary file using lipo and place the combined executable in the copied framework directory\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework/${PROJECT_NAME}\"\n\n# Step 5. Convenience step to copy the framework to the project's directory\ncp -R \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework\" \"${PROJECT_DIR}\"\n\nfi\n";
+			shellScript = "UNIVERSAL_OUTPUT_DIR=${BUILD_DIR}/${CONFIGURATION}-universal\nRELEASE_DIR=${PROJECT_DIR}/build\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUT_DIR}\"\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO BITCODE_GENERATION_MODE=bitcode -configuration ${CONFIGURATION} BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build -sdk iphoneos\n\nxcodebuild -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO BITCODE_GENERATION_MODE=bitcode -configuration ${CONFIGURATION} BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build -sdk iphonesimulator\n\n# Step 2. Copy the framework structure (from iphoneos build) to the universal folder\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/AudioServicesPlayback.framework\" \"${UNIVERSAL_OUTPUT_DIR}/\"\n\n# Step 3. Copy Swift modules from iphonesimulator build (if it exists) to the copied framework directory\nSIMULATOR_SWIFT_MODULES_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/Modules/AudioServicesPlayback.swiftmodule/.\"\nif [ -d \"${SIMULATOR_SWIFT_MODULES_DIR}\" ]; then\ncp -R \"${SIMULATOR_SWIFT_MODULES_DIR}\" \"${UNIVERSAL_OUTPUT_DIR}/AudioServicesPlayback.framework/Modules/AudioServicesPlayback.swiftmodule\"\nfi\n\n# Step 4. Create universal binary file using lipo and place the combined executable in the copied framework directory\nlipo -create -output \"${UNIVERSAL_OUTPUT_DIR}/AudioServicesPlayback.framework/AudioServicesPlayback\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/AudioServicesPlayback.framework/AudioServicesPlayback\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/AudioServicesPlayback.framework/AudioServicesPlayback\"\n\n# Step 5. Convenience step to copy the framework to the project's directory\ncp -R \"${UNIVERSAL_OUTPUT_DIR}/AudioServicesPlayback.framework\" \"${RELEASE_DIR}\"\n\n\n\n\n\n\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -524,6 +542,24 @@
 			};
 			name = Release;
 		};
+		3590ED97220289C500021D14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y545S76C5X;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		3590ED98220289C500021D14 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y545S76C5X;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -550,6 +586,15 @@
 			buildConfigurations = (
 				350DC58A220265BC000FE44C /* Debug */,
 				350DC58B220265BC000FE44C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3590ED96220289C500021D14 /* Build configuration list for PBXAggregateTarget "UniversalFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3590ED97220289C500021D14 /* Debug */,
+				3590ED98220289C500021D14 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
