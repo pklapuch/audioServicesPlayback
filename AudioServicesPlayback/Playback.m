@@ -41,7 +41,9 @@
 
 - (void)didFinishPlayingSoundID:(SystemSoundID)soundID {
     
-    self.completionBlock();
+    if (self.completionBlock != nil) {
+        self.completionBlock();
+    }
 }
 
 static void completionCallback(SystemSoundID soundID, void *instance) {
