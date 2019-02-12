@@ -30,8 +30,6 @@
 		350DC582220265BC000FE44C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 350DC581220265BC000FE44C /* Assets.xcassets */; };
 		350DC585220265BC000FE44C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350DC583220265BC000FE44C /* LaunchScreen.storyboard */; };
 		350DC588220265BC000FE44C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 350DC587220265BC000FE44C /* main.m */; };
-		350DC595220267B8000FE44C /* AudioServicesPlayback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 350DC58D2202668F000FE44C /* AudioServicesPlayback.framework */; };
-		350DC596220267B8000FE44C /* AudioServicesPlayback.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 350DC58D2202668F000FE44C /* AudioServicesPlayback.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,7 +49,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				350DC596220267B8000FE44C /* AudioServicesPlayback.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,7 +86,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				350DC595220267B8000FE44C /* AudioServicesPlayback.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

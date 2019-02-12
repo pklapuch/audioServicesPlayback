@@ -25,9 +25,9 @@
     
     self.playback = [[Playback alloc] initWithSystemSoundID:beepSound];
     
-    [self.playback addCompletion:^{
-        NSLog(@"Did finish playing sound");
-    }];
+//    [self.playback addCompletion:^{
+//        NSLog(@"Did finish playing sound");
+//    }];
     
     [self.playback play];
 }
